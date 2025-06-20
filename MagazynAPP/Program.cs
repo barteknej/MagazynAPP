@@ -9,10 +9,10 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Konfiguracja adresów URL
+
 builder.WebHost.UseUrls("http://localhost:5221");
 
-// Add services to the container.
+
 var MagazynConnectionString = builder.Configuration.GetConnectionString("MagazynDB");
 builder.Services.AddDbContext<ProductContext>((options) =>
 {

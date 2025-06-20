@@ -460,7 +460,6 @@ function showProductInterface() {
     document.getElementById('productInterface').classList.remove('hidden');
 }
 
-// Added custom styles for buttons and table
 const style = document.createElement('style');
 style.textContent = `
     .btn-primary {
@@ -502,18 +501,14 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize product modal
     productModal = new bootstrap.Modal(document.getElementById('productModal'));
     
-    // Set up login button handler
     const loginButton = document.getElementById('loginButton');
     if (loginButton) {
         loginButton.addEventListener('click', handleLogin);
     }
     
-    // Set up password enter key handler
     const passwordInput = document.getElementById('password');
     if (passwordInput) {
         passwordInput.addEventListener('keypress', (e) => {
@@ -523,10 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Check for stored token and validate its format
     const storedToken = localStorage.getItem('authToken');
     if (storedToken) {
-        // Ensure token has Bearer prefix
         authToken = storedToken.startsWith('Bearer ') ? storedToken : `Bearer ${storedToken}`;
         localStorage.setItem('authToken', authToken);
         
@@ -544,7 +537,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoginForm();
     }
 
-    // Add enter key listeners for search inputs
     document.getElementById('searchType')?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             searchByType();
