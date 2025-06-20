@@ -1,9 +1,11 @@
 ﻿using MagazynAPP.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MagazynAPP.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -19,13 +21,13 @@ namespace MagazynAPP.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product product)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Products.Add(product);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
-            }
-            return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
         }
 
         // Usuń produkt
@@ -35,12 +37,13 @@ namespace MagazynAPP.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                return NotFound($"Produkt o ID {id} nie został znaleziony.");
             }
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            return Ok(new { message = "Produkt usunięty." });
         }
 
         // Aktualizuj produkt
@@ -50,7 +53,7 @@ namespace MagazynAPP.Controllers
             var existingProduct = await _context.Products.FindAsync(id);
             if (existingProduct == null)
             {
-                return NotFound();
+                return NotFound($"Produkt o ID {id} nie został znaleziony.");
             }
 
             // Aktualizuj właściwości produktu
@@ -62,56 +65,78 @@ namespace MagazynAPP.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(new { message = "Produkt zaktualizowany." });
             }
             catch (DbUpdateConcurrencyException)
             {
                 return StatusCode(500, "Wystąpił problem podczas aktualizacji produktu.");
             }
-
-            return NoContent();
         }
 
         // Wyświetl wszystkie produkty
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-            return await _context.Products.ToListAsync();
+            try
+            {
+                var products = await _context.Products.ToListAsync();
+                return Ok(products);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Wystąpił błąd podczas pobierania produktów.");
+            }
         }
 
         // Wyświetl produkty po typie
         [HttpGet("type/{type}")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsByType(string type)
         {
-            var products = await _context.Products.Where(p => p.Type == type).ToListAsync();
-            if (!products.Any())
+            try
             {
-                return NotFound();
+                var products = await _context.Products.Where(p => p.Type == type).ToListAsync();
+                if (!products.Any())
+                    return NotFound($"Brak produktów o typie: {type}");
+                return Ok(products);
             }
-            return products;
+            catch (Exception)
+            {
+                return StatusCode(500, "Wystąpił błąd podczas pobierania produktów po typie.");
+            }
         }
 
         // Wyświetl produkty po ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductById(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound();
+                var product = await _context.Products.FindAsync(id);
+                if (product == null)
+                    return NotFound($"Produkt o ID {id} nie został znaleziony.");
+                return Ok(product);
             }
-            return product;
+            catch (Exception)
+            {
+                return StatusCode(500, "Wystąpił błąd podczas pobierania produktu.");
+            }
         }
 
         // Wyświetl produkty po nazwie
         [HttpGet("name/{name}")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsByName(string name)
         {
-            var products = await _context.Products.Where(p => p.Name.Contains(name)).ToListAsync();
-            if (!products.Any())
+            try
             {
-                return NotFound();
+                var products = await _context.Products.Where(p => p.Name.Contains(name)).ToListAsync();
+                if (!products.Any())
+                    return NotFound($"Brak produktów o nazwie zawierającej: {name}");
+                return Ok(products);
             }
-            return products;
+            catch (Exception)
+            {
+                return StatusCode(500, "Wystąpił błąd podczas pobierania produktów po nazwie.");
+            }
         }
     }
 }

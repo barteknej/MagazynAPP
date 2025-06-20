@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hidden {
+            display: none;
+        }
+        /* Updated styles for a modern look */
+        body {
+            background-color: #f3f4f6; /* Light gray for a clean background */
+            font-family: 'Roboto', sans-serif; /* Modern and readable font */
+            color: #374151; /* Dark gray for text */
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #2563eb; /* Bright blue for navbar */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .navbar-nav .nav-link {
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-right: 1.5rem;
+        }
+
+        .product-container {
+            background-color: #ffffff;
+            border-radius: 16px; /* Rounded corners for a modern look */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .table {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .table th {
+            background-color: #2563eb; /* Bright blue for table headers */
+            color: #ffffff;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .table td {
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            border-radius: 8px; /* Rounded buttons */
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        .btn-primary {
+            background-color: #2563eb; /* Bright blue for primary buttons */
+            border-color: #2563eb;
+            color: #ffffff;
+        }
+        .btn-danger {
+            background-color: #dc2626; /* Bright red for danger buttons */
+            border-color: #dc2626;
+            color: #ffffff;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .modal-header {
+            background-color: #2563eb; /* Bright blue for modal headers */
+            color: #ffffff;
+        }
+        .modal-footer .btn {
+            font-size: 1rem;
+        }
+
+        /* Wrap login interface in a blue square */
+        #loginForm {
+            background-color: #2563eb;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 400px;
+            margin: auto;
+            color: #ffffff;
+        }
+
+        #loginForm h2 {
+            color: #ffffff;
+        }
+
+        #loginForm input[type="text"],
+        #loginForm input[type="password"] {
+            background-color: #ffffff;
+            color: #374151;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #loginForm button {
+            background-color: #ffffff;
+            color: #2563eb;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #loginForm button:hover {
+            background-color: #e5e7eb;
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginForm" class="login-container">
+        <h2 class="text-center mb-4">Warehouse Management System</h2>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" placeholder="Enter username">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Enter password">
+        </div>        <div id="loginError" class="alert alert-danger hidden"></div>
+        <button type="button" id="loginButton" class="btn btn-primary w-100">Login</button>
+    </div>
+
+    <!-- Product Management Interface -->
+    <div id="productInterface" class="hidden">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Warehouse Management</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                    </ul>
+                    <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container product-container">            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Products</h3>
+                <button class="btn btn-primary" onclick="showAddProductModal()">Add Product</button>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchType" placeholder="Search by type...">
+                        <button class="btn btn-outline-secondary" onclick="searchByType()">Search Type</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="searchId" placeholder="Search by ID...">
+                        <button class="btn btn-outline-secondary" onclick="searchById()">Search ID</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-outline-primary" onclick="loadProducts()">Show All</button>
+                </div>
+            </div>
+            
+            <div id="productError" class="alert alert-danger hidden"></div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add/Edit Product Modal -->
+        <div class="modal fade" id="productModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalTitle">Add Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="productName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="productName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="productDescription" class="form-label">Type</label>
+                            <input type="text" class="form-control" id="productDescription">
+                        </div>
+                        <div class="mb-3">
+                            <label for="productQuantity" class="form-label">Price (PLN)</label>
+                            <input type="number" class="form-control" id="productQuantity">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="productInStock">
+                            <label class="form-check-label" for="productInStock">Available in stock</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="saveProduct()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="front.js"></script>
+</body>
+</html>
